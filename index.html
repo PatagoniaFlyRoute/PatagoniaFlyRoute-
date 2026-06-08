@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patagonia FlyRoute — Guía de Pesca · Outdoor · Aventuras</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --verde-rio: #2a4a35;
+  --verde-oscuro: #1a2f20;
+  --agua: #3d8b7a;
+  --agua-clara: #6dbcaa;
+  --tierra: #8b6914;
+  --dorado: #c8960a;
+  --roca: #4a3a28;
+  --nieve: #e8ede8;
+  --cielo: #7ab8c8;
+  --fondo: #0d1a10;
+  --glass: rgba(10, 25, 15, 0.62);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  color: var(--nieve);
+  background: var(--fondo);
+  overflow-x: hidden;
+  cursor: none;
+}
+#cur { position:fixed; width:10px; height:10px; background:var(--agua-clara); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); mix-blend-mode:screen; transition:width .2s,height .2s; }
+#cur-r { position:fixed; width:36px; height:36px; border:1px solid rgba(109,188,170,.4); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .3s,height .3s,border-color .3s; }
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  border: 1px solid rgba(109,188,170,0.14);
+  box-shadow: 0 8px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1.2rem 3rem;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background .4s;
+}
+nav.scrolled {
+  background: rgba(13,26,16,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(109,188,170,0.1);
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--nieve); text-decoration: none; letter-spacing: .04em;
+}
+.nav-logo span { color: var(--agua-clara); font-style: italic; }
+.nav-links { display: flex; gap: 2.4rem; list-style: none; }
+.nav-links a {
+  font-family: 'Jost', sans-serif; font-size: .72rem; font-weight: 400;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--cielo); text-decoration: none; transition: color .3s;
+}
+.nav-links a:hover { color: var(--agua-clara); }
+
+/* HERO */
+.hero {
+  min-height: 100vh; position: relative;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 4rem 2rem; text-align: center; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0; overflow: hidden;
+}
+.hero-bg iframe {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 177.78vh;
+  height: 100vh;
+  min-width: 100%;
+  min-height: 56.25vw;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: brightness(0.38) saturate(1.2);
+}
+.hero-overlay {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, rgba(13,26,16,0.2) 0%, rgba(13,26,16,0.5) 40%, rgba(13,26,16,0.85) 80%, rgba(13,26,16,1) 100%);
+}
+.hero-content { position: relative; z-index: 2; max-width: 820px; }
+.hero-eyebrow {
+  font-size: .7rem; font-weight: 400; letter-spacing: .35em;
+  text-transform: uppercase; color: var(--agua-clara); margin-bottom: 1.2rem;
+  opacity: 0; animation: fadeUp .9s ease forwards .3s;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 700; line-height: 1.02; letter-spacing: -.02em;
+  color: var(--nieve); opacity: 0; animation: fadeUp 1s ease forwards .5s;
+}
+.hero-title .italic { font-style: italic; color: var(--agua-clara); }
+.hero-tagline {
+  font-size: clamp(.9rem, 2vw, 1.15rem); font-weight: 200;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--cielo); margin-top: 1.4rem;
+  opacity: 0; animation: fadeUp 1s ease forwards .75s;
+}
+.hero-divider {
+  width: 60px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--agua-clara), transparent);
+  margin: 2rem auto; opacity: 0; animation: fadeUp .8s ease forwards 1s;
+}
+.hero-cta { opacity: 0; animation: fadeUp .8s ease forwards 1.2s; }
+.btn-primary {
+  display: inline-block; padding: .85rem 2.4rem;
+  font-family: 'Jost', sans-serif; font-size: .78rem; font-weight: 400;
+  letter-spacing: .25em; text-transform: uppercase;
+  color: var(--nieve); border: 1px solid var(--agua-clara);
+  text-decoration: none; transition: background .3s, color .3s;
+  backdrop-filter: blur(8px); background: rgba(61,139,122,0.12);
+}
+.btn-primary:hover { background: var(--agua-clara); color: var(--verde-oscuro); }
+
+/* SECTIONS */
+.section { padding: 7rem 2rem; max-width: 1100px; margin: 0 auto; }
+.section-label {
+  font-size: .65rem; font-weight: 400; letter-spacing: .4em;
+  text-transform: uppercase; color: var(--agua-clara); margin-bottom: .8rem;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 700; line-height: 1.15; color: var(--nieve); margin-bottom: 1.2rem;
+}
+.section-title .italic { font-style: italic; color: var(--agua-clara); }
+.body-text {
+  font-size: 1rem; font-weight: 300; line-height: 1.8;
+  color: rgba(232,237,232,0.75); max-width: 640px;
+}
+
+/* CARDS */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem; margin-top: 3.5rem;
+}
+.dest-card {
+  position: relative; border-radius: 2px; overflow: hidden;
+  cursor: pointer; transition: transform .35s ease, box-shadow .35s ease;
+}
+.dest-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,.6); }
+.dest-card-img {
+  height: 280px;
+  background: linear-gradient(135deg, var(--verde-rio), var(--agua));
+  position: relative; overflow: hidden; display: flex; align-items: flex-end;
+}
+.dest-card-img::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 30%, rgba(13,26,16,0.85) 100%);
+  z-index: 1;
+}
+.dest-card-emoji {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -60%);
+  font-size: 4rem; opacity: 0.25; z-index: 0;
+}
+.dest-card-body {
+  padding: 1.8rem 2rem;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(109,188,170,0.1);
+  border-top: none;
+}
+.dest-card-label {
+  font-size: .62rem; font-weight: 400; letter-spacing: .35em;
+  text-transform: uppercase; color: var(--agua-clara); margin-bottom: .5rem;
+}
+.dest-card-title {
+  font-family: 'Playfair Display', serif; font-size: 1.45rem;
+  font-weight: 700; color: var(--nieve); margin-bottom: .7rem; line-height: 1.2;
+}
+.dest-card-desc {
+  font-size: .88rem; font-weight: 300; line-height: 1.7;
+  color: rgba(232,237,232,0.7); margin-bottom: 1.2rem;
+}
+.dest-card-details { display: none; }
+.dest-card.open .dest-card-details {
+  display: block; margin-top: 1rem; padding-top: 1rem;
+  border-top: 1px solid rgba(109,188,170,0.15);
+}
+.detail-row {
+  display: flex; gap: .6rem; margin-bottom: .5rem;
+  font-size: .84rem; font-weight: 300; color: rgba(232,237,232,0.65);
+}
+.detail-row strong { color: var(--agua-clara); font-weight: 400; }
+.dest-toggle {
+  font-size: .68rem; font-weight: 400; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--agua-clara);
+  cursor: pointer; border: none; background: none; padding: 0;
+  display: flex; align-items: center; gap: .5rem; transition: color .3s;
+}
+.dest-toggle:hover { color: var(--nieve); }
+.dest-toggle::after { content: '↓'; transition: transform .3s; }
+.dest-card.open .dest-toggle::after { transform: rotate(180deg); }
+
+/* ORNAMENT */
+.orn {
+  text-align: center; margin: 2rem 0;
+  color: rgba(109,188,170,0.3); font-size: 1rem; letter-spacing: .6em;
+}
+
+/* ABOUT */
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4rem; align-items: start; margin-top: 3rem;
+}
+@media(max-width: 700px) {
+  .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .nav-links { display: none; }
+}
+.about-portrait {
+  width: 100%; aspect-ratio: 3/4;
+  background: var(--glass);
+  border: 1px solid rgba(109,188,170,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 5rem; opacity: .35;
+}
+.about-text .name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem; font-weight: 700; color: var(--nieve); margin-bottom: .3rem;
+}
+.about-text .role {
+  font-size: .7rem; font-weight: 400; letter-spacing: .3em;
+  text-transform: uppercase; color: var(--agua-clara); margin-bottom: 1.2rem;
+}
+.about-text p {
+  font-size: .95rem; font-weight: 300; line-height: 1.85;
+  color: rgba(232,237,232,0.72); margin-bottom: 1rem;
+}
+
+/* CONTACT */
+.contact-wrap {
+  max-width: 1100px; margin: 0 auto; padding: 5rem 2rem 7rem; text-align: center;
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem; margin-top: 3rem;
+}
+.c-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.4rem 1.8rem; text-decoration: none;
+  color: var(--nieve); border-radius: 2px;
+  transition: transform .3s, box-shadow .3s;
+}
+.c-item:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.5); }
+.c-icon { font-size: 1.6rem; }
+.c-label { font-size: .65rem; font-weight: 400; letter-spacing: .25em; text-transform: uppercase; color: var(--agua-clara); margin-bottom: .15rem; }
+.c-val { font-size: .92rem; font-weight: 300; }
+
+footer {
+  background: var(--verde-oscuro);
+  border-top: 1px solid rgba(109,188,170,0.1);
+  padding: 2.5rem; text-align: center;
+}
+.f-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem; font-weight: 700; color: var(--nieve); letter-spacing: .08em; margin-bottom: .4rem;
+}
+.f-tag { font-size: .62rem; font-weight: 300; letter-spacing: .35em; text-transform: uppercase; color: var(--agua-clara); }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(24px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+.anim-reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.anim-reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* WHATSAPP */
+.wa-float {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 500;
+  display: flex; align-items: center; gap: .75rem;
+  text-decoration: none; animation: fadeUp .8s ease forwards 2s; opacity: 0;
+}
+.wa-label {
+  background: rgba(10,25,15,0.85); backdrop-filter: blur(16px);
+  border: 1px solid rgba(109,188,170,0.2); color: var(--nieve);
+  font-family: 'Jost', sans-serif; font-size: .72rem; font-weight: 300;
+  letter-spacing: .12em; padding: .5rem 1rem; white-space: nowrap;
+  opacity: 0; transform: translateX(8px); transition: opacity .3s, transform .3s;
+  pointer-events: none;
+}
+.wa-float:hover .wa-label { opacity: 1; transform: translateX(0); }
+.wa-btn {
+  width: 54px; height: 54px; border-radius: 50%; background: #25D366;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,.35);
+  transition: transform .3s, box-shadow .3s; flex-shrink: 0;
+}
+.wa-float:hover .wa-btn { transform: scale(1.1); box-shadow: 0 6px 28px rgba(37,211,102,.55); }
+.wa-btn svg { width: 28px; height: 28px; fill: #fff; }
+.wa-btn::after {
+  content: ''; position: absolute;
+  width: 54px; height: 54px; border-radius: 50%;
+  border: 2px solid #25D366; animation: waPulse 2.2s ease-out infinite;
+}
+@keyframes waPulse {
+  0%   { transform: scale(1); opacity: .7; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-r"></div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#hero" class="nav-logo">Patagonia <span>FlyRoute</span></a>
+  <ul class="nav-links">
+    <li><a href="#destinos">Destinos</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <iframe src="https://www.youtube.com/embed/H0lGfhtXEGs?autoplay=1&mute=1&loop=1&playlist=H0lGfhtXEGs&controls=0&showinfo=0&rel=0&modestbranding=1&disablekb=1&fs=0"
+      frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Patagonia Argentina · Chile · Norte</p>
+    <h1 class="hero-title">Patagonia<br><span class="italic">FlyRoute</span></h1>
+    <p class="hero-tagline">Fly Fishing &nbsp;·&nbsp; Outdoor &nbsp;·&nbsp; Adventures</p>
+    <div class="hero-divider"></div>
+    <div class="hero-cta">
+      <a href="#destinos" class="btn-primary">Explorar Destinos</a>
+    </div>
+  </div>
+</section>
+
+<!-- DESTINOS -->
+<div style="background: linear-gradient(180deg, var(--fondo) 0%, rgba(13,26,16,0.6) 100%);">
+<section class="section" id="destinos">
+  <p class="section-label anim-reveal">◆ Destinos</p>
+  <h2 class="section-title anim-reveal">Cada destino,<br>una <span class="italic">historia única</span></h2>
+  <p class="body-text anim-reveal">Seleccionamos los mejores rincones de Sudamérica para ofrecerte experiencias de pesca y aventura que van más allá de lo ordinario. Cada salida es guiada por Federico Abdala, con años de conocimiento del territorio patagónico y sus aguas.</p>
+
+  <div class="cards-grid">
+
+    <div class="dest-card anim-reveal" onclick="toggleCard(this)">
+      <div class="dest-card-img"><div class="dest-card-emoji">🐟</div></div>
+      <div class="dest-card-body">
+        <p class="dest-card-label">Pesca · Patagonia</p>
+        <h3 class="dest-card-title">Truchas en la Patagonia</h3>
+        <p class="dest-card-desc">Los ríos de Tecka y la estepa patagónica esconden truchas arcoíris y marrones de talla excepcional. Paisajes que cortan el aliento, aguas cristalinas y silencio absoluto.</p>
+        <button class="dest-toggle">Ver detalles</button>
+        <div class="dest-card-details">
+          <div class="detail-row"><strong>Temporada:</strong>&nbsp; Noviembre a Abril</div>
+          <div class="detail-row"><strong>Zona:</strong>&nbsp; Chubut — Tecka y afluentes</div>
+          <div class="detail-row"><strong>Especie:</strong>&nbsp; Trucha arcoíris · Trucha marrón · Brook trout</div>
+          <div class="detail-row"><strong>Modalidad:</strong>&nbsp; Wading · Drift boat</div>
+          <div class="detail-row"><strong>Alojamiento:</strong>&nbsp; Lodges rurales y estancias</div>
+          <div class="detail-row"><strong>Nivel:</strong>&nbsp; Todos los niveles · Principiantes bienvenidos</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dest-card anim-reveal" onclick="toggleCard(this)">
+      <div class="dest-card-img" style="background: linear-gradient(135deg, #1a3a5c, #2a7a9a);"><div class="dest-card-emoji">🐠</div></div>
+      <div class="dest-card-body">
+        <p class="dest-card-label">Pesca · Chile</p>
+        <h3 class="dest-card-title">Atún on the Fly — Chile</h3>
+        <p class="dest-card-desc">La experiencia que nos hizo virales. Pesca de atún a mosca en las costas chilenas: adrenalina pura, técnica extrema y capturas que quedan grabadas de por vida.</p>
+        <button class="dest-toggle">Ver detalles</button>
+        <div class="dest-card-details">
+          <div class="detail-row"><strong>Temporada:</strong>&nbsp; Enero a Marzo</div>
+          <div class="detail-row"><strong>Zona:</strong>&nbsp; Pacífico — Costa chilena</div>
+          <div class="detail-row"><strong>Especie:</strong>&nbsp; Albacora · Atún aleta amarilla</div>
+          <div class="detail-row"><strong>Modalidad:</strong>&nbsp; Pesca desde embarcación</div>
+          <div class="detail-row"><strong>Alojamiento:</strong>&nbsp; Hotel boutique costero</div>
+          <div class="detail-row"><strong>Nivel:</strong>&nbsp; Intermedio a avanzado</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dest-card anim-reveal" onclick="toggleCard(this)">
+      <div class="dest-card-img" style="background: linear-gradient(135deg, #5a3510, #a86820);"><div class="dest-card-emoji">🎣</div></div>
+      <div class="dest-card-body">
+        <p class="dest-card-label">Pesca · Norte Argentino</p>
+        <h3 class="dest-card-title">Dorado — Iberá y Corrientes</h3>
+        <p class="dest-card-desc">El "tigre del río" en su hábitat natural. Los Esteros del Iberá ofrecen una de las mejores pesquerías de dorado del mundo, rodeados de una naturaleza imponente.</p>
+        <button class="dest-toggle">Ver detalles</button>
+        <div class="dest-card-details">
+          <div class="detail-row"><strong>Temporada:</strong>&nbsp; Marzo a Junio · Septiembre a Noviembre</div>
+          <div class="detail-row"><strong>Zona:</strong>&nbsp; Corrientes — Iberá · Río Paraná</div>
+          <div class="detail-row"><strong>Especie:</strong>&nbsp; Dorado · Surubí · Pacú</div>
+          <div class="detail-row"><strong>Modalidad:</strong>&nbsp; Pesca en bote con guía</div>
+          <div class="detail-row"><strong>Alojamiento:</strong>&nbsp; Lodge en esteros · Naturaleza total</div>
+          <div class="detail-row"><strong>Nivel:</strong>&nbsp; Intermedio · Alta adrenalina</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dest-card anim-reveal" onclick="toggleCard(this)">
+      <div class="dest-card-img" style="background: linear-gradient(135deg, #2a1a3a, #5a3080);"><div class="dest-card-emoji">🚁</div></div>
+      <div class="dest-card-body">
+        <p class="dest-card-label">Premium · Patagonia</p>
+        <h3 class="dest-card-title">Experiencias Especiales</h3>
+        <p class="dest-card-desc">Para quienes buscan lo extraordinario. Acceso en helicóptero a ríos remotos, lodges de lujo, y jornadas de pesca en lugares que muy pocos humanos han pisado.</p>
+        <button class="dest-toggle">Ver detalles</button>
+        <div class="dest-card-details">
+          <div class="detail-row"><strong>Modalidad:</strong>&nbsp; Helicóptero · Caballos · 4x4</div>
+          <div class="detail-row"><strong>Destinos:</strong>&nbsp; Zona Andes patagónicos · Lagos remotos</div>
+          <div class="detail-row"><strong>Alojamiento:</strong>&nbsp; Lodge premium con servicio completo</div>
+          <div class="detail-row"><strong>Incluye:</strong>&nbsp; Guía exclusivo · Equipamiento profesional</div>
+          <div class="detail-row"><strong>Grupo:</strong>&nbsp; Máximo 4 pescadores</div>
+          <div class="detail-row"><strong>Nivel:</strong>&nbsp; Todos · Experiencia de lujo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dest-card anim-reveal" onclick="toggleCard(this)">
+      <div class="dest-card-img" style="background: linear-gradient(135deg, #1a3520, #2d6040);"><div class="dest-card-emoji">🏔️</div></div>
+      <div class="dest-card-body">
+        <p class="dest-card-label">Outdoor · Naturaleza</p>
+        <h3 class="dest-card-title">Outdoor &amp; Trekking</h3>
+        <p class="dest-card-desc">La Patagonia no es solo pesca. Diseñamos experiencias combinadas: caminatas por senderos vírgenes, campamentos bajo cielos infinitos y vida al ritmo de la naturaleza.</p>
+        <button class="dest-toggle">Ver detalles</button>
+        <div class="dest-card-details">
+          <div class="detail-row"><strong>Actividades:</strong>&nbsp; Trekking · Campamento · Observación de fauna</div>
+          <div class="detail-row"><strong>Duración:</strong>&nbsp; 2 días a 2 semanas (personalizable)</div>
+          <div class="detail-row"><strong>Zona:</strong>&nbsp; Patagonia · Andes · Cordillera</div>
+          <div class="detail-row"><strong>Formato:</strong>&nbsp; Días mixtos pesca + trekking disponibles</div>
+          <div class="detail-row"><strong>Alojamiento:</strong>&nbsp; Carpa premium · Refugios · Estancias</div>
+          <div class="detail-row"><strong>Nivel:</strong>&nbsp; Principiante a avanzado</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</div>
+
+<div class="orn"><span>◆ ◆ ◆</span></div>
+
+<!-- NOSOTROS -->
+<section class="section" id="nosotros" style="padding-top: 3rem;">
+  <p class="section-label anim-reveal">◆ Quiénes somos</p>
+  <h2 class="section-title anim-reveal">Pasión, territorio<br>y <span class="italic">autenticidad</span></h2>
+  <div class="about-grid">
+    <div class="about-portrait anim-reveal">🎣</div>
+    <div class="about-text">
+      <div class="anim-reveal">
+        <p class="name">Federico Abdala</p>
+        <p class="role">Guía de Pesca · Patagonia FlyRoute</p>
+        <p>Federico es el alma aventurera de Patagonia FlyRoute. Con años de experiencia en los ríos y lagos de la Patagonia, el norte argentino y las costas de Chile, conoce cada recoveco del territorio como la palma de su mano.</p>
+        <p>Su filosofía: cada experiencia debe ser auténtica, segura y transformadora. No guiamos turistas — acompañamos personas que buscan conectar de verdad con la naturaleza.</p>
+      </div>
+      <div class="anim-reveal" style="margin-top: 2rem;">
+        <p class="name">Neikel Pérez</p>
+        <p class="role">Dirección Creativa · Contenido Audiovisual</p>
+        <p>Detrás de cámara, Neikel documenta cada expedición con la misma pasión que Federico la vive. Su mirada audiovisual convierte cada viaje en una historia que podés ver en nuestro Instagram y YouTube.</p>
+        <p>También es el cerebro estratégico: las redes sociales, la identidad visual y esta misma web son su terreno.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="orn"><span>◆</span></div>
+
+<!-- CONTACTO -->
+<div class="contact-wrap" id="contacto">
+  <p class="section-label anim-reveal" style="text-align:center;">◆ Contacto</p>
+  <h2 class="section-title anim-reveal" style="text-align:center;">¿Listo para tu<br><span class="italic">próxima aventura?</span></h2>
+  <p class="body-text anim-reveal" style="margin: 0 auto; text-align:center;">Escribinos y diseñamos juntos la experiencia perfecta para vos.</p>
+  <div class="contact-grid anim-reveal">
+    <a class="c-item glass" href="https://www.instagram.com/patagoniaflyroute/" target="_blank">
+      <div class="c-icon">📷</div>
+      <div><div class="c-label">Instagram</div><div class="c-val">@patagoniaflyroute</div></div>
+    </a>
+    <a class="c-item glass" href="https://www.youtube.com/@PatagoniaFlyRoute" target="_blank">
+      <div class="c-icon">▶</div>
+      <div><div class="c-label">YouTube</div><div class="c-val">@PatagoniaFlyRoute</div></div>
+    </a>
+    <a class="c-item glass" href="https://www.threads.net/@patagoniaflyroute" target="_blank">
+      <div class="c-icon">🌐</div>
+      <div><div class="c-label">Threads</div><div class="c-val">@patagoniaflyroute</div></div>
+    </a>
+    <a class="c-item glass" href="https://wa.me/542945588955?text=Hola!%20Vi%20el%20portafolio%20de%20Patagonia%20FlyRoute%20y%20me%20gustar%C3%ADa%20consultar." target="_blank">
+      <div class="c-icon">💬</div>
+      <div><div class="c-label">WhatsApp</div><div class="c-val">+54 9 2945 588955</div></div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="f-logo">PATAGONIA FLYROUTE</div>
+  <div class="f-tag">Fly Fishing · Outdoor · Adventures · Patagonia Argentina</div>
+  <div style="height:1px; background: rgba(109,188,170,0.15); margin: 1.5rem auto; max-width:300px;"></div>
+  <p style="font-size:.6rem; font-weight:300; letter-spacing:.25em; color:rgba(232,237,232,0.35); text-transform:uppercase;">© 2026 Patagonia FlyRoute — Todos los derechos reservados</p>
+</footer>
+
+<!-- WHATSAPP FLOTANTE -->
+<a class="wa-float" href="https://wa.me/542945588955?text=Hola!%20Vi%20el%20portafolio%20de%20Patagonia%20FlyRoute%20y%20me%20gustar%C3%ADa%20consultar%20sobre%20una%20experiencia." target="_blank">
+  <span class="wa-label">Consultanos por WhatsApp</span>
+  <div class="wa-btn">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </div>
+</a>
+
+<script>
+// Custom cursor
+const cur = document.getElementById('cur');
+const curR = document.getElementById('cur-r');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx+'px'; cur.style.top = my+'px';
+});
+(function loop(){
+  rx += (mx-rx)*.1; ry += (my-ry)*.1;
+  curR.style.left = rx+'px'; curR.style.top = ry+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a, button, .dest-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cur.style.width='18px'; cur.style.height='18px';
+    curR.style.width='50px'; curR.style.height='50px';
+    curR.style.borderColor='rgba(109,188,170,.8)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cur.style.width='10px'; cur.style.height='10px';
+    curR.style.width='36px'; curR.style.height='36px';
+    curR.style.borderColor='rgba(109,188,170,.4)';
+  });
+});
+
+// Nav scroll
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('main-nav');
+  if(window.scrollY > 60) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+}, {passive:true});
+
+// Intersection observer for animations
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold: .12});
+document.querySelectorAll('.anim-reveal').forEach(el => io.observe(el));
+
+// Card toggle
+function toggleCard(card) {
+  const was = card.classList.contains('open');
+  document.querySelectorAll('.dest-card').forEach(c => c.classList.remove('open'));
+  if(!was) card.classList.add('open');
+}
+</script>
+</body>
+</html>
